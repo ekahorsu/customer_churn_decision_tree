@@ -40,8 +40,8 @@ The dataset is a synthetic but realistic **customer churn** problem (2,000 custo
 ## How to run
 
 ```bash
-git clone https://github.com/ekahorsu/decision-tree-bias-variance.git
-cd decision-tree-bias-variance
+git clone https://github.com/ekahorsu/customer_churn_decision_tree.git
+cd customer_churn_decision_tree
 pip install -r requirements.txt
 jupyter notebook customer_churn_decision_tree.ipynb
 ```
