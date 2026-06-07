@@ -27,6 +27,26 @@ The dataset mixes categorical features (credit history, purpose, savings, employ
 
 Accuracy in this range is expected: credit risk is intrinsically difficult to predict from these features, and the results are in line with the known benchmark performance for this dataset. Recall on the bad-risk class is treated as the more informative metric, since the cost of approving a loan that defaults is higher than the cost of declining one that would have been repaid. The progression from a single tree to bagging to boosting raises that recall from 0.18 to 0.52, which is the most meaningful improvement for this application.
 
+## Challenges and Solutions
+
+### Encoding mixed-type features
+
+**Challenge.** The dataset combines categorical attributes such as credit history, purpose, and savings with numeric ones such as loan amount and age. A decision tree splits on ordered thresholds, so the categorical columns could not be used in their raw string form.
+
+**Solution.** The categorical columns were converted to integer codes with an ordinal encoder, allowing the tree to treat them as ordered values and search for thresholds among them. This is a deliberate simplification: it imposes an ordering on categories that may not have a natural one. Dedicated categorical handling, as found in XGBoost and LightGBM, would instead consider arbitrary groupings, and this is noted as a limitation of the from-scratch approach.
+
+### Choosing the right evaluation metric under class imbalance
+
+**Challenge.** The target is imbalanced at roughly 70 percent good and 30 percent bad risk. With this distribution, overall accuracy is a misleading measure of quality, since a model could score reasonably well simply by favoring the majority class while failing to identify the applicants who matter most.
+
+**Solution.** Recall on the bad-risk class was adopted as the primary metric, reflecting the asymmetric cost of errors in lending: approving a loan that later defaults is far more costly than declining one that would have been repaid. Tracking this metric across the three models showed it rising from 0.18 to 0.52, a more meaningful gain than the change in overall accuracy.
+
+### Selecting model complexity without overfitting
+
+**Challenge.** A single train/test accuracy figure does not reveal whether a model is too simple or too complex, which makes the choice of tree depth difficult to justify on its own.
+
+**Solution.** Tree depth was swept across a range of values, recording both training accuracy and five-fold cross-validation accuracy at each depth. The resulting curves exposed the bias-variance tradeoff directly, with cross-validation identifying depth five as the best balance. Crucially, the depth was selected without consulting the test set, which was reserved for a single final evaluation.
+
 ## How to run
 
 ```bash
